@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKTU SGPA Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        select, button {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        #result {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .info {
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            table, tr, td {
+                display: block;
+            }
+            tr {
+                margin-bottom: 10px;
+            }
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+            }
+            td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-weight: bold;
+            }
+        }
+        .footer {
+            text-align: center;
+            font-size: 1em;
+            color: #555;
+            margin-top: 20px;
+        }
+        .footer a {
+            text-decoration: none;
+            color: #2196F3;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AKTU SGPA Calculator</h1>
+        <p>Calculate your Semester Grade Point Average (SGPA) for semesters 1 - 4</p>
+    </header>
+
+    <div class="info">
+        <p>This calculator works for the academic year 2022 onwards. Please check with your own result first to ensure the calculator is working correctly.</p>
+        <p>If you encounter any issues, please email: dydipanshu2004@gmail.com</p>
+    </div>
+
+    <main>
+        <select id="semesterSelect">
+            <option value="">Select Semester</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <option value="3">Semester 3</option>
+            <option value="4">Semester 4</option>
+        </select>
+
+        <table id="subjectsTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Subject Code</th>
+                    <th>Internal Marks</th>
+                    <th>External Marks</th>
+                </tr>
+            </thead>
+            <tbody id="subjectsBody">
+            </tbody>
+        </table>
+
+        <button id="calculateSGPA" style="display: none;">Calculate SGPA</button>
+
+        <div id="result"></div>
+    </main>
+
+    <footer class="footer">
+        <p>Created by <a href="mailto:dydipanshu2004@gmail.com">Deepanshu Yadav</a></p>
+    </footer>
+
+    <script>
+        const curriculumData = {
+    "BAS303": 4,
+    "BVE301": 3,
+    "BAS301": 3,
+    "BEE301": 4,
+    "BEE302": 4,
+    "BEE303": 3,
+    "BEE351": 1,
+    "BEE352": 1,
+    "BEE353": 1,
+    "BCC301": 2,
+    "BCC302": 2,
+    "BCC351": 2,
+    "BAS403": 4,
+    "BAS401": 3,
+    "BVE401": 3,
+    "BEE401": 4,
+    "BEE402": 4,
+    "BEE403": 3,
+    "BEE451": 1,
+    "BEE452": 1,
+    "BEE453": 1,
+    "BCC402": 2,
+    "BCC401": 2,
+    "BVE451": 0,
+    "BVE452": 0,
+    "BAS101": 4,
+    "BAS102": 4,
+    "BAS103": 4,
+    "BEE101": 3,
+    "BEC101": 3,
+    "BCS101": 3,
+    "BME101": 3,
+    "BAS104": 3,
+    "BAS105": 3,
+    "BAS151": 1,
+    "BAS152": 1,
+    "BEE151": 1,
+    "BEC151": 1,
+    "BCS151": 1,
+    "BAS155": 1,
+    "BCE151": 2,
+    "BWS151": 2,
+    "BAS201": 4,
+    "BAS202": 4,
+    "BAS203": 4,
+    "BEC201": 3,
+    "BEE201": 3,
+    "BME201": 3,
+    "BCS201": 3,
+    "BAS204": 3,
+    "BAS205": 3,
+    "BAS251": 1,
+    "BAS252": 1,
+    "BEC251": 1,
+    "BEE251": 1,
+    "BCS251": 1,
+    "BAS255": 1,
+    "BCE251": 2,
+    "BWS251": 2,
+    "BVA251": 0,
+    "BVA252": 0,
+    "BCS401": 4,
+    "BCS402": 4,
+    "BCS403": 3,
+    "BCS451": 1,
+    "BCS452": 1,
+    "BCS453": 1,
+    "BEC401": 4,
+    "BEC402": 4,
+    "BEC403": 3,
+    "BEC451": 1,
+    "BEC452": 1,
+    "BEC453": 1,
+    "BCE401": 4,
+    "BCE402": 4,
+    "BCE403": 3,
+    "BCE451": 1,
+    "BCE452": 1,
+    "BCE453": 1,
+    "BME401": 4,
+    "BME402": 4,
+    "BME403": 3,
+    "BME451": 1,
+    "BME452": 1,
+    "BME453": 1,
+    "BCS301": 4,
+    "BCS302": 4,
+    "BCS303": 3,
+    "BCS352": 1,
+    "BCS353": 1,
+    "BEC301": 4,
+    "BEC302": 4,
+    "BEC303": 3,
+    "BEC351": 1,
+    "BEC352": 1,
+    "BEC353": 1,
+    "BCE301": 4,
+    "BCE302": 4,
+    "BCE303": 3,
+    "BCE351": 1,
+    "BCE352": 1,
+    "BCE353": 1,
+    "BME301": 4,
+    "BME302": 4,
+    "BME303": 3,
+    "BME351": 1,
+    "BME352": 1,
+    "BME353": 1
+};
+
+        const internalOnlySubjects = ['BVA251', 'BVA252', 'BVE451', 'BVE452', 'BCC351'];
+
+        const semesterSubjects = {
+            1: 9,
+            2: 10,
+            3: 11,
+            4: 10
+        };
+
+        const dummyData = [
+    { code: "BAS102", internal: 16, external: 40 },
+    { code: "BAS103", internal: 26, external: 21 },
+    { code: "BEC101", internal: 19, external: 36 },
+    { code: "BCS101", internal: 22, external: 31 },
+    { code: "BAS104", internal: 26, external: 45 },
+    { code: "BAS152", internal: 38, external: 38 },
+    { code: "BEC151", internal: 38, external: 40 },
+    { code: "BCS151", internal: 35, external: 35 },
+    { code: "BWS151", internal: 43, external: 40 }
+];
+
+        document.getElementById('semesterSelect').addEventListener('change', function() {
+            const table = document.getElementById('subjectsTable');
+            const calculateButton = document.getElementById('calculateSGPA');
+            const tbody = document.getElementById('subjectsBody');
+
+            if (this.value) {
+                table.style.display = 'table';
+                calculateButton.style.display = 'inline-block';
+                tbody.innerHTML = '';
+                
+                const numSubjects = semesterSubjects[this.value];
+                for (let i = 0; i < numSubjects; i++) {
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = getSubjectRowHTML(this.value);
+                    tbody.appendChild(newRow);
+                }
+
+                if (this.value === "1") {
+                    populateDummyData();
+                }
+            } else {
+                table.style.display = 'none';
+                calculateButton.style.display = 'none';
+                tbody.innerHTML = '';
+            }
+        });
+        let selectedSubjects = new Set();
+    let currentSemester = '';
+
+    document.getElementById('semesterSelect').addEventListener('change', function() {
+        const table = document.getElementById('subjectsTable');
+        const calculateButton = document.getElementById('calculateSGPA');
+        const tbody = document.getElementById('subjectsBody');
+        const addRowButton = document.getElementById('addRowButton');
+
+        currentSemester = this.value;
+
+        if (this.value) {
+            table.style.display = 'table';
+            calculateButton.style.display = 'inline-block';
+            addRowButton.style.display = 'inline-block';
+            tbody.innerHTML = '';
+            selectedSubjects.clear();
+            
+            const numSubjects = semesterSubjects[this.value];
+            for (let i = 0; i < numSubjects; i++) {
+                addNewRow();
+            }
+
+            if (this.value === "1") {
+                populateDummyData();
+            }
+
+            updateSubjectLists();
+            addEventListeners();
+        } else {
+            table.style.display = 'none';
+            calculateButton.style.display = 'none';
+            addRowButton.style.display = 'none';
+            tbody.innerHTML = '';
+        }
+    });
+
+    function addNewRow() {
+        const tbody = document.getElementById('subjectsBody');
+        if (tbody.children.length < 20) {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = getSubjectRowHTML(currentSemester);
+            tbody.appendChild(newRow);
+            addEventListeners();
+            updateSubjectLists();
+        } else {
+            alert("Maximum of 20 subjects allowed per semester.");
+        }
+    }
+
+    function addEventListeners() {
+    const rows = document.querySelectorAll('#subjectsBody tr');
+    rows.forEach((row, index) => {
+        const subjectCode = row.querySelector('.subjectCode');
+        const internalMarks = row.querySelector('.internalMarks');
+        const externalMarks = row.querySelector('.externalMarks');
+
+        subjectCode.addEventListener('change', function() {
+            updateMaxMarks(this);
+            if (this.value) {
+                if (curriculumData.hasOwnProperty(this.value)) {
+                    selectedSubjects.add(this.value);
+                    updateSubjectLists();
+                } else {
+                    alert("THIS SUBJECT DOES NOT EXIST. KINDLY CONTACT OWNER.");
+                    this.value = '';
+                }
+            }
+        });
+
+        internalMarks.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                externalMarks.focus();
+            }
+        });
+
+        externalMarks.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const nextRow = row.nextElementSibling;
+                if (nextRow) {
+                    nextRow.querySelector('.internalMarks').focus();
+                } else {
+                    document.getElementById('calculateSGPA').focus();
+                }
+            }
+        });
+    });
+}
+    function updateSubjectLists() {
+        const datalist = document.getElementById(`subjectCodes${currentSemester}`);
+        datalist.innerHTML = '';
+
+        Object.keys(curriculumData)
+            .filter(code => code[3] === currentSemester.toString() && !selectedSubjects.has(code))
+            .forEach(code => {
+                const option = document.createElement('option');
+                option.value = code;
+                datalist.appendChild(option);
+            });
+    }
+
+    function getSubjectRowHTML(semester) {
+    return `
+        <td data-label="Subject Code"><input type="text" class="subjectCode" list="subjectCodes${semester}"></td>
+        <td data-label="Internal Marks"><input type="number" class="internalMarks" min="0"></td>
+        <td data-label="External Marks"><input type="number" class="externalMarks" min="0"></td>
+    `;
+}
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const semesters = [1, 2, 3, 4];
+        semesters.forEach(semester => {
+            const datalist = document.createElement('datalist');
+            datalist.id = `subjectCodes${semester}`;
+            document.body.appendChild(datalist);
+        });
+
+        const addRowButton = document.createElement('button');
+        addRowButton.id = 'addRowButton';
+        addRowButton.textContent = 'Add Subject';
+        addRowButton.style.display = 'none';
+        addRowButton.addEventListener('click', addNewRow);
+        document.querySelector('main').insertBefore(addRowButton, document.getElementById('calculateSGPA'));
+    });
+
+    document.getElementById('calculateSGPA').addEventListener('click', calculateSGPA);
+
+    function populateDummyData() {
+        const rows = document.querySelectorAll('#subjectsBody tr');
+        rows.forEach((row, index) => {
+            if (index < dummyData.length) {
+                const data = dummyData[index];
+                row.querySelector('.subjectCode').value = data.code;
+                row.querySelector('.internalMarks').value = data.internal;
+                row.querySelector('.externalMarks').value = data.external;
+                row.querySelector('.externalMarks').style.display = '';
+                updateMaxMarks(row.querySelector('.subjectCode'));
+            }
+        });
+    }
+
+    function updateMaxMarks(subjectCodeInput) {
+    const row = subjectCodeInput.closest('tr');
+    const internalInput = row.querySelector('.internalMarks');
+    const externalInput = row.querySelector('.externalMarks');
+    const subjectCode = subjectCodeInput.value;
+
+    if (subjectCode && subjectCode.length >= 4) {
+        if (internalOnlySubjects.includes(subjectCode)) {
+            // Internal-only subjects
+            internalInput.max = 100;
+            externalInput.value = 0;
+            externalInput.disabled = true;
+        } else {
+            const isTheorySubject = subjectCode[3] === '0';
+            if (isTheorySubject) {
+                // Theory subjects
+                internalInput.max = 30;
+                externalInput.max = 70;
+            } else {
+                // Non-theory subjects
+                internalInput.max = 50;
+                externalInput.max = 50;
+            }
+            externalInput.disabled = false;
+        }
+        externalInput.style.display = '';
+    }
+}
+function calculateSGPA() {
+    const rows = document.querySelectorAll('#subjectsBody tr');
+    let totalCredits = 0;
+    let totalGradePoints = 0;
+    let errorMessage = '';
+
+    rows.forEach(row => {
+        const subjectCode = row.querySelector('.subjectCode').value;
+        const internalMarks = parseFloat(row.querySelector('.internalMarks').value);
+        const externalMarks = parseFloat(row.querySelector('.externalMarks').value);
+
+        if (!subjectCode || isNaN(internalMarks) || isNaN(externalMarks)) {
+            errorMessage = 'PLEASE FILL ALL THE FIELDS';
+            return;
+        }
+
+        if (!curriculumData.hasOwnProperty(subjectCode)) {
+            errorMessage = 'THIS SUBJECT DOES NOT EXIST. KINDLY CONTACT OWNER.';
+            return;
+        }
+
+        const credits = curriculumData[subjectCode];
+        let totalMarks = internalMarks + externalMarks;
+
+        if (internalOnlySubjects.includes(subjectCode)) {
+            if (internalMarks > 100 || externalMarks !== 0) {
+                errorMessage = 'WRONG MARKS ENTERED. PLEASE CHECK AGAIN.';
+                return;
+            }
+        } else {
+            if (subjectCode[3] === '0' && (internalMarks > 30 || externalMarks > 70 || totalMarks > 100)) {
+                errorMessage = 'WRONG MARKS ENTERED. PLEASE CHECK AGAIN.';
+                return;
+            } else if (internalMarks > 50 || externalMarks > 50) {
+                errorMessage = 'WRONG MARKS ENTERED. PLEASE CHECK AGAIN.';
+                return;
+            }
+        }
+
+        let gradePoint;
+
+        if (subjectCode.endsWith('51') || subjectCode.endsWith('52')) {
+            gradePoint = getGradePoint(totalMarks);
+        } else {
+            gradePoint = (externalMarks < 21) ? 0 : getGradePoint(totalMarks);
+        }
+
+        totalCredits += credits;
+        totalGradePoints += credits * gradePoint;
+    });
+
+    if (errorMessage) {
+        document.getElementById('result').textContent = errorMessage;
+    } else {
+        const sgpa = totalGradePoints / totalCredits;
+        document.getElementById('result').textContent = `SGPA: ${sgpa.toFixed(2)}`;
+    }
+}
+
+    function getGradePoint(marks) {
+        if (marks >= 90) return 10;
+        if (marks >= 80) return 9;
+        if (marks >= 70) return 8;
+        if (marks >= 60) return 7;
+        if (marks >= 50) return 6;
+        if (marks >= 45) return 5;
+        if (marks >= 40) return 4;
+        return 0;
+    }
+    </script>
+
+</body>
+</html>
