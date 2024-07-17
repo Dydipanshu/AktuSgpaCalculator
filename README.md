@@ -17,6 +17,10 @@ Welcome to the AKTU SGPA Calculator! This tool is designed for students to estim
 3. **Calculate SGPA:** Click the "Calculate SGPA" button to get your estimated SGPA.
 4. **View Result:** The calculated SGPA will be displayed, helping you gauge your academic performance.
 
+## Live Demo
+
+You can access the live version of the AKTU SGPA Calculator at [https://aktu-sgpa-calculator.vercel.app/](https://aktu-sgpa-calculator.vercel.app/).
+
 ## Getting Started
 
 1. Clone the repository or download the HTML file.
